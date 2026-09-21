@@ -23,14 +23,14 @@ jobs:
       - name: Build and verify
         run: |
           docker build --platform linux/amd64 -f Containerfile \
-            -t ghcr.io/eddiexyang/qemu:${{ github.sha }} .
+            -t ghcr.io/eddiexyang/libvirt:${{ github.sha }} .
           docker run --rm --platform linux/amd64 \
             --entrypoint /usr/libexec/qemu-kvm \
-            ghcr.io/eddiexyang/qemu:${{ github.sha }} \
+            ghcr.io/eddiexyang/libvirt:${{ github.sha }} \
             -device help | grep 'name "isa-applesmc"'
       - name: Publish
         run: |
-          docker tag ghcr.io/eddiexyang/qemu:${{ github.sha }} \
-            ghcr.io/eddiexyang/qemu:v1.9.0-qemu-9.2.4
-          docker push ghcr.io/eddiexyang/qemu:${{ github.sha }}
-          docker push ghcr.io/eddiexyang/qemu:v1.9.0-qemu-9.2.4
+          docker tag ghcr.io/eddiexyang/libvirt:${{ github.sha }} \
+            ghcr.io/eddiexyang/libvirt:v1.9.0-qemu-9.2.4
+          docker push ghcr.io/eddiexyang/libvirt:${{ github.sha }}
+          docker push ghcr.io/eddiexyang/libvirt:v1.9.0-qemu-9.2.4
