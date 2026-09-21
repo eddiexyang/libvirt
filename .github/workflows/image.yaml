@@ -3,6 +3,9 @@ name: image
 on:
   push:
     branches: [release]
+    paths:
+      - Containerfile
+      - qemu-kvm
   workflow_dispatch:
 
 permissions:
