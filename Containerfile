@@ -3,11 +3,12 @@ ARG KUBEVIRT_IMAGE=quay.io/kubevirt/virt-launcher@sha256:f23102ca00bf12f7962021a
 FROM fedora:42 AS qemu-runtime
 
 RUN dnf -y \
+      --use-host-config \
       --installroot=/opt/qemu \
       --releasever=42 \
       --setopt=install_weak_deps=False \
-      install qemu-system-x86-core-2:9.2.4-2.fc42 \
-    && dnf -y --installroot=/opt/qemu clean all \
+      install qemu-system-x86-core-9.2.4-2.fc42 \
+    && dnf -y --use-host-config --installroot=/opt/qemu clean all \
     && rm -rf /opt/qemu/var/cache/dnf
 
 FROM ${KUBEVIRT_IMAGE}
