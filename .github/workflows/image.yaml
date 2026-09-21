@@ -34,6 +34,6 @@ jobs:
       - name: Publish
         run: |
           docker tag ghcr.io/eddiexyang/libvirt:${{ github.sha }} \
-            ghcr.io/eddiexyang/libvirt:v1.9.0-qemu-9.2.4
+            ghcr.io/eddiexyang/libvirt:v1.9.0-qemu-10.0.13
           docker push ghcr.io/eddiexyang/libvirt:${{ github.sha }}
-          docker push ghcr.io/eddiexyang/libvirt:v1.9.0-qemu-9.2.4
+          docker push ghcr.io/eddiexyang/libvirt:v1.9.0-qemu-10.0.13

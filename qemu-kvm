@@ -1,10 +1,10 @@
 #!/bin/sh
 set -eu
 
-export QEMU_MODULE_DIR=/opt/qemu/usr/lib64/qemu
+export QEMU_MODULE_DIR=/opt/qemu/usr/lib/x86_64-linux-gnu/qemu
 
-exec /opt/qemu/lib64/ld-linux-x86-64.so.2 \
-  --library-path /opt/qemu/lib64:/opt/qemu/usr/lib64 \
+exec /opt/qemu/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
+  --library-path /opt/qemu/usr/lib/x86_64-linux-gnu \
   /opt/qemu/usr/bin/qemu-system-x86_64 \
   -L /opt/qemu/usr/share/qemu \
   "$@"
