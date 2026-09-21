@@ -15,6 +15,19 @@ RUN apt-get update \
          dpkg-deb --extract "$package" /opt/qemu; \
        done
 
+# DT_RPATH also applies to transitive dependencies; DT_RUNPATH on just the
+# executable would allow them to fall back to the launcher's system libraries.
+# patchelf is a build-stage tool and is not copied into the final image.
+RUN apt-get install -y --no-install-recommends patchelf \
+    && patchelf \
+      --set-interpreter /opt/qemu/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
+      --force-rpath --set-rpath /opt/qemu/usr/lib/x86_64-linux-gnu \
+      /opt/qemu/usr/bin/qemu-system-x86_64 \
+    && test "$(patchelf --print-interpreter /opt/qemu/usr/bin/qemu-system-x86_64)" \
+      = /opt/qemu/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
+    && test "$(patchelf --print-rpath /opt/qemu/usr/bin/qemu-system-x86_64)" \
+      = /opt/qemu/usr/lib/x86_64-linux-gnu
+
 FROM ${KUBEVIRT_IMAGE}
 
 COPY --from=qemu-runtime /opt/qemu /opt/qemu
@@ -28,3 +41,18 @@ RUN /usr/libexec/qemu-kvm --version \
     && printf 'quit\n' | /usr/libexec/qemu-kvm \
          -machine q35,accel=tcg -nodefaults -display none \
          -device vmware-svga -S -monitor stdio
+
+# Exercise the wrapper's exec without KVM, and check the executable identity
+# reported to process monitors. Always reap this build-only smoke-test process.
+RUN set -eu; \
+    /usr/libexec/qemu-kvm -machine none,accel=tcg -nodefaults -display none -S & \
+    qemu_pid=$!; \
+    trap 'kill "$qemu_pid" 2>/dev/null || true; wait "$qemu_pid" 2>/dev/null || true' EXIT; \
+    attempts=0; \
+    while [ "$(readlink /proc/"$qemu_pid"/exe)" != /opt/qemu/usr/bin/qemu-system-x86_64 ]; do \
+      kill -0 "$qemu_pid"; \
+      attempts=$((attempts + 1)); \
+      test "$attempts" -lt 100; \
+      sleep 0.1; \
+    done; \
+    test "$(cat /proc/"$qemu_pid"/comm)" = qemu-system-x86
