@@ -24,4 +24,7 @@ RUN /usr/libexec/qemu-kvm --version \
     && /usr/libexec/qemu-kvm --version | grep -q 'version 10.0.13' \
     && /usr/libexec/qemu-kvm -device help | grep -q 'name "isa-applesmc"' \
     && /usr/libexec/qemu-kvm -device help | grep -q 'name "vmxnet3"' \
-    && /usr/libexec/qemu-kvm -device help | grep -q 'name "vmware-svga"'
+    && /usr/libexec/qemu-kvm -device help | grep -q 'name "vmware-svga"' \
+    && printf 'quit\n' | /usr/libexec/qemu-kvm \
+         -machine q35,accel=tcg -nodefaults -display none \
+         -device vmware-svga -S -monitor stdio

@@ -7,4 +7,5 @@ exec /opt/qemu/usr/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2 \
   --library-path /opt/qemu/usr/lib/x86_64-linux-gnu \
   /opt/qemu/usr/bin/qemu-system-x86_64 \
   -L /opt/qemu/usr/share/qemu \
+  -L /opt/qemu/usr/share/seabios \
   "$@"
